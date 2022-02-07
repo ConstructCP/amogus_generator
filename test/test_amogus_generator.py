@@ -1,5 +1,5 @@
 import pytest
-from amogus_generator import AmogusFactory, Amogus
+from app.amogus_generator import AmogusFactory, Amogus
 
 
 class TestAmogusGenerator:

@@ -1,6 +1,8 @@
 import random
 from typing import Tuple, List
 
+from app.helpers import unique_results
+
 
 class Amogus:
     def __init__(self, name: str = 'amogus'):
@@ -18,22 +20,31 @@ class AmogusFactory:
         :returns Amogus object with random name
         """
         if action is None:
-            action = random.choices(['extend', 'cut', 'mirror'], weights=[9, 9, 5])[0]
+            action = random.choices(['extend', 'cut', 'mirror'], weights=[10, 1, 1])[0]
 
-        if action == 'extend':
-            name = self.extend_amogus_name()
-        elif action == 'cut':
-            name = self.cut_amogus_name()
-        elif action == 'mirror':
-            name = self.mirror_amogus_name()
-        else:
-            raise ValueError('action must be extend, cut, mirror or None (for random action)')
+        name = self.generate_amogus_name(action)
 
         if name == self.name:
             return self.generate_amogus(action)
 
         return Amogus(name)
 
+    def generate_amogus_name(self, action):
+        """
+        Generates amogus name
+        :param action: how to generate Amogus name: extend basic name, cut it or cut and mirror it.
+        :return: string with name
+        """
+        if action == 'extend':
+            return self.extend_amogus_name()
+        elif action == 'cut':
+            return self.cut_amogus_name()
+        elif action == 'mirror':
+            return self.mirror_amogus_name()
+        else:
+            raise ValueError('action must be extend, cut, mirror or None (for random action)')
+
+    @unique_results(cache_size=100)
     def extend_amogus_name(self) -> str:
         """
         Generate Amogus name by extending base name. Basic name can be extended with prefix and/or postfix
@@ -53,6 +64,7 @@ class AmogusFactory:
             result_name += postfix
         return result_name
 
+    @unique_results(cache_size=10)
     def cut_amogus_name(self) -> str:
         """
         Generate Amogus name by cutting base name from beginning and/or end.
@@ -60,6 +72,7 @@ class AmogusFactory:
         """
         return self.get_random_substring()
 
+    @unique_results(cache_size=10)
     def mirror_amogus_name(self) -> str:
         """
         Generate Amogus name by cutting base name from beginning and/or end and mirroring it.
