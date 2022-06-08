@@ -1,12 +1,41 @@
 import random
 from typing import Tuple, List
+from PIL import Image
 
 from app.helpers import unique_results
+from app.image_generator import AmogusImageGenerator
 
 
 class Amogus:
     def __init__(self, name: str = 'amogus'):
         self._name = name
+        self._image = None
+
+    @property
+    def name(self) -> str:
+        """
+        Return Amogus name
+        :return string with Amogus name
+        """
+        return self._name
+
+    @property
+    def image(self) -> Image:
+        """
+        Return Amogus image. If image wasn't generated yet - generate and return
+        :return PIL Image object with amogus image
+        """
+        if self._image is None:
+            self.generate_image()
+        return self._image
+
+    def generate_image(self) -> None:
+        """
+        Generate image basing on name
+        """
+        if self._image is None:
+            image_generator = AmogusImageGenerator(self.name)
+            self._image = image_generator.generate_image()
 
 
 class AmogusFactory:
@@ -33,7 +62,7 @@ class AmogusFactory:
         """
         Generates amogus name
         :param action: how to generate Amogus name: extend basic name, cut it or cut and mirror it.
-        :return: string with name
+        :return: input_string with name
         """
         if action == 'extend':
             return self.extend_amogus_name()
@@ -49,7 +78,7 @@ class AmogusFactory:
         """
         Generate Amogus name by extending base name. Basic name can be extended with prefix and/or postfix
         which are generated from base name. Base name itself can also be cut.
-        :return: string with new Amogus name
+        :return: input_string with new Amogus name
         """
         is_add_prefix, is_add_postfix, is_cut_middle = self.get_random_trasformation_parameters()
 
@@ -68,7 +97,7 @@ class AmogusFactory:
     def cut_amogus_name(self) -> str:
         """
         Generate Amogus name by cutting base name from beginning and/or end.
-        :return: string with new Amogus name
+        :return: input_string with new Amogus name
         """
         return self.get_random_substring()
 
@@ -76,7 +105,7 @@ class AmogusFactory:
     def mirror_amogus_name(self) -> str:
         """
         Generate Amogus name by cutting base name from beginning and/or end and mirroring it.
-        :return: string with new Amogus name
+        :return: input_string with new Amogus name
         """
         name_part = self.get_random_substring()
         if name_part.startswith('a') and name_part.endswith('s'):
@@ -105,8 +134,8 @@ class AmogusFactory:
 
     def get_random_substring(self, name: str = None, cut_from_begin: bool = True, cut_from_end: bool = True) -> str:
         """
-        Generate random substring of given string
-        :param name: string to generate substrings. If name is None - use basic name
+        Generate random substring of given input_string
+        :param name: input_string to generate substrings. If name is None - use basic name
         :param cut_from_begin: allow generation to cut name from beginning
         :param cut_from_end: allow generation to cut name from end
         :return: randomly generated substring of name
@@ -128,7 +157,7 @@ class AmogusFactory:
     def get_pseudonormal_weights(self, s: str) -> List[int]:
         """
         Calculate weights for random.choices. Weights should resemble normal distribution
-        :param s: string for which weights are calculated
+        :param s: input_string for which weights are calculated
         :return: list of ints representing weights
         """
         mid_index = len(s) // 2
